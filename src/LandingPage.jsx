@@ -137,11 +137,11 @@ export default function LandingPage({ onStart }) {
           <div style={attributionStyle}>
             <div>A story map by SUNLab at Northeastern University</div>
             <div style={logoRowStyle}>
-              <img src="/images/sunlab.png" alt="SUNLab - Social Urban Networks" style={logoImgStyle} />
+              <img src={`${import.meta.env.BASE_URL}images/sunlab.png`} alt="SUNLab - Social Urban Networks" style={logoImgStyle} />
             </div>
             <div style={collaborationStyle}>In collaboration with</div>
             <div style={nyuRowStyle}>
-              <img src="/images/nyu.png" alt="NYU" style={logoImgStyle} />
+              <img src={`${import.meta.env.BASE_URL}images/nyu.png`} alt="NYU" style={logoImgStyle} />
             </div>
           </div>
         </div>

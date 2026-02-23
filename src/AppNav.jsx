@@ -38,7 +38,7 @@ function MethodsModalContent() {
       </p>
       <div style={{ textAlign: 'center', margin: '1.25em 0' }}>
         <img
-          src="/images/methods.png"
+          src={`${import.meta.env.BASE_URL}images/methods.png`}
           alt="Diagram: The restaurant depends on the office: 18% of its visitors also visit the office."
           style={{ maxWidth: '60%', height: 'auto' }}
         />
@@ -62,7 +62,7 @@ function SimulationMethodsModalContent() {
       </p>
       <div style={{ textAlign: 'center', margin: '1.25em 0' }}>
         <img
-          src="/images/methods_simulations.png"
+          src={`${import.meta.env.BASE_URL}images/methods_simulations.png`}
           alt="Diagram: Through the dependency network, shocks in one place (blue) propagate to distant places."
           style={{ maxWidth: '60%', height: 'auto' }}
         />
@@ -116,7 +116,7 @@ function AboutModalContent() {
         <tbody>
           <tr>
             <td style={cellStyle}>
-              <img src="/images/about-esteban-moro.jpg" alt="Esteban Moro" style={teamImgStyle} />
+              <img src={`${import.meta.env.BASE_URL}images/about-esteban-moro.jpg`} alt="Esteban Moro" style={teamImgStyle} />
               <p style={nameStyle}>
                 Esteban Moro{' '}
                 <a href="mailto:e.moroegido@northeastern.edu" style={linkStyle} title="Email"><span style={emailIconStyle}>✉</span></a>
@@ -124,7 +124,7 @@ function AboutModalContent() {
               </p>
             </td>
             <td style={cellStyle}>
-              <img src="/images/about-takahiro-yabe.jpg" alt="Takahiro Yabe" style={teamImgStyle} />
+              <img src={`${import.meta.env.BASE_URL}images/about-takahiro-yabe.jpg`} alt="Takahiro Yabe" style={teamImgStyle} />
               <p style={nameStyle}>
                 Takahiro Yabe{' '}
                 <a href="mailto:takahiroyabe@nyu.edu" style={linkStyle} title="Email"><span style={emailIconStyle}>✉</span></a>
@@ -134,15 +134,15 @@ function AboutModalContent() {
           </tr>
           <tr>
             <td style={cellStyle}>
-              <img src="/images/about-bernardo.png" alt="Bernardo García" style={teamImgStyle} />
+              <img src={`${import.meta.env.BASE_URL}images/about-bernardo.png`} alt="Bernardo García" style={teamImgStyle} />
               <p style={nameStyle}>Bernardo García<br /><strong>MIT</strong></p>
             </td>
             <td style={cellStyle}>
-              <img src="/images/about-morgan.jpg" alt="Morgan Frank" style={teamImgStyle} />
+              <img src={`${import.meta.env.BASE_URL}images/about-morgan.jpg`} alt="Morgan Frank" style={teamImgStyle} />
               <p style={nameStyle}>Morgan Frank<br /><strong>University of Pittsburgh</strong></p>
             </td>
             <td style={cellStyle}>
-              <img src="/images/about-alex-pentland.png" alt="Alex Pentland" style={teamImgStyle} />
+              <img src={`${import.meta.env.BASE_URL}images/about-alex-pentland.png`} alt="Alex Pentland" style={teamImgStyle} />
               <p style={nameStyle}>Sandy Pentland<br /><strong>MIT</strong></p>
             </td>
           </tr>

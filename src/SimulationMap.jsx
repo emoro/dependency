@@ -7,20 +7,22 @@ import { ScatterplotLayer } from '@deck.gl/layers'
 import { BOSTON_CENTER, REF_ZOOM } from './mapConfig'
 import { SIDEBAR_CONTAINER_STYLE, SIDEBAR_SECTION_STYLE, SIDEBAR_LABEL_STYLE } from './theme'
 
+const BASE = import.meta.env.BASE_URL
+
 // Supported simulation scenarios and their data sources
 const SIMULATION_CONFIGS = {
   airports: {
     id: 'airports',
     label: 'Airports',
-    closedUrl: '/airports_poi.json',
-    impactUrl: '/airports_impact.json',
+    closedUrl: `${BASE}airports_poi.json`,
+    impactUrl: `${BASE}airports_impact.json`,
     preprocessCmd: 'Rscript scripts/preprocess_airports.R',
   },
   colleges: {
     id: 'colleges',
     label: 'Colleges',
-    closedUrl: '/colleges_poi.json',
-    impactUrl: '/colleges_impact.json',
+    closedUrl: `${BASE}colleges_poi.json`,
+    impactUrl: `${BASE}colleges_impact.json`,
     preprocessCmd: 'Rscript scripts/preprocess_colleges.R',
   },
 }

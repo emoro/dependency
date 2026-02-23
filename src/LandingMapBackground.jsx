@@ -6,7 +6,7 @@ import { ArcLayer, ScatterplotLayer } from '@deck.gl/layers'
 import { BOSTON_CENTER, REF_ZOOM } from './mapConfig'
 
 const LANDING_MAP_CENTER = [-71.11, 42.36]
-const DATA_URL = '/boston_network.json'
+const DATA_URL = `${import.meta.env.BASE_URL}boston_network.json`
 const ARC_BASE_WIDTH_PX = 0.9
 const POI_BASE_RADIUS_M = 24
 

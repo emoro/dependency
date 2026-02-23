@@ -11,7 +11,7 @@ import { MapboxOverlay } from '@deck.gl/mapbox'
 import { LineLayer, ScatterplotLayer } from '@deck.gl/layers'
 import { BOSTON_CENTER, REF_ZOOM } from './mapConfig'
 import { SIDEBAR_CONTAINER_STYLE, SIDEBAR_SECTION_STYLE, SIDEBAR_LABEL_STYLE } from './theme'
-const DATA_URL = '/boston_network.json'
+const DATA_URL = `${import.meta.env.BASE_URL}boston_network.json`
 const ZOOM_SCALE_DIVISOR = 1.2 // smaller = stronger shrink at low zoom
 const POI_ZOOM_SCALE_DIVISOR = 1.0 // steeper: POIs shrink more at small zooms
 const POI_BASE_RADIUS_M = 32
