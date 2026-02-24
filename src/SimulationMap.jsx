@@ -234,7 +234,7 @@ function SimulationSidebar({
 
   return (
     <div style={SIDEBAR_CONTAINER_STYLE}>
-      <h3 style={{ margin: '0 0 14px', fontSize: 14, fontWeight: 600, color: '#f0f0f0' }}>Filters</h3>
+      <h3 style={{ margin: '0 0 14px', fontSize: 14, fontWeight: 600, color: '#f0f0f0' }}>Shock filters</h3>
 
       <section style={SIDEBAR_SECTION_STYLE}>
         <div style={SIDEBAR_LABEL_STYLE}>Scenario</div>
@@ -460,6 +460,12 @@ export default function SimulationMap({ sharedZoom = 10, onSharedZoomChange }) {
   const [viewBounds, setViewBounds] = useState(null) // [[minLon,minLat],[maxLon,maxLat]]
   const [simulationId, setSimulationId] = useState('airports')
   const dataCacheRef = useRef({}) // { [simulationId]: { closedPois, impactPois } }
+  const [isSmallScreen, setIsSmallScreen] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= 480 : false
+  )
+  const [isSidebarOpen, setIsSidebarOpen] = useState(
+    typeof window !== 'undefined' ? window.innerWidth > 480 : true
+  )
 
   const impactExtent = useMemo(() => {
     if (!impactPois.length) return null
@@ -617,6 +623,18 @@ export default function SimulationMap({ sharedZoom = 10, onSharedZoomChange }) {
   }, [simulationId])
 
   useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === 'undefined') return
+      const small = window.innerWidth <= 480
+      setIsSmallScreen(small)
+      if (!small) setIsSidebarOpen(true)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
     const container = document.getElementById('map-simulation')
     if (!container) return
 
@@ -761,17 +779,44 @@ export default function SimulationMap({ sharedZoom = 10, onSharedZoomChange }) {
         </div>
       )}
       {!loading && !error && (closedPois.length > 0 || impactPois.length > 0) && (
-        <SimulationSidebar
-          taxonomyOptions={taxonomyOptions}
-          selectedTaxonomies={selectedTaxonomies}
-          onToggleTaxonomy={toggleTaxonomy}
-          onClear={() => setSelectedTaxonomies([])}
-          impactExtent={impactExtent}
-          impactRange={impactRange}
-          onImpactRangeChange={setImpactRange}
-          simulationId={simulationId}
-          onSimulationChange={setSimulationId}
-        />
+        <>
+          {isSmallScreen && (
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen((open) => !open)}
+              style={{
+                position: 'absolute',
+                top: 72,
+                right: 16,
+                zIndex: 11,
+                padding: '6px 10px',
+                fontSize: 12,
+                fontWeight: 500,
+                color: '#fff',
+                background: 'rgba(31, 34, 50, 0.95)',
+                borderRadius: 999,
+                border: '1px solid rgba(255,255,255,0.4)',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              {isSidebarOpen ? 'Hide filters' : 'Show filters'}
+            </button>
+          )}
+          {(!isSmallScreen || isSidebarOpen) && (
+            <SimulationSidebar
+              taxonomyOptions={taxonomyOptions}
+              selectedTaxonomies={selectedTaxonomies}
+              onToggleTaxonomy={toggleTaxonomy}
+              onClear={() => setSelectedTaxonomies([])}
+              impactExtent={impactExtent}
+              impactRange={impactRange}
+              onImpactRangeChange={setImpactRange}
+              simulationId={simulationId}
+              onSimulationChange={setSimulationId}
+            />
+          )}
+        </>
       )}
     </div>
   )

@@ -6,7 +6,7 @@ import { ArcLayer, ScatterplotLayer } from '@deck.gl/layers'
 import { BOSTON_CENTER, REF_ZOOM } from './mapConfig'
 
 const LANDING_MAP_CENTER = [-71.11, 42.36]
-const DATA_URL = `${import.meta.env.BASE_URL}boston_network.json`
+const DATA_URL = `${import.meta.env.BASE_URL}boston_network_landing.json`
 const ARC_BASE_WIDTH_PX = 0.9
 const POI_BASE_RADIUS_M = 24
 
@@ -19,7 +19,6 @@ function poiRadiusMeters(zoom) {
   return Math.max(1, POI_BASE_RADIUS_M * Math.pow(2, (zoom - REF_ZOOM) / 1.0))
 }
 
-const LANDING_MAX_DISTANCE_KM = 2
 const NUM_QUANTILES = 5
 const DEP_PALETTE = [
   [127, 59, 141],
@@ -69,15 +68,12 @@ function quantileToColor(q) {
 }
 
 function buildLandingLayers(arcs, zoom = 10) {
-  const shortArcs = (arcs || []).filter((a) => {
-    const d = Number(a.distance)
-    return !Number.isNaN(d) && d < LANDING_MAX_DISTANCE_KM
-  })
-  const quantileBoundaries = getQuantileBoundaries(shortArcs)
-  const shortPois = shortArcs.length > 0
+  const list = Array.isArray(arcs) ? arcs : []
+  const quantileBoundaries = getQuantileBoundaries(list)
+  const shortPois = list.length > 0
     ? (() => {
         const byId = new Map()
-        shortArcs.forEach((a) => {
+        list.forEach((a) => {
           if (a.poi_a && a.sourcePosition) byId.set(a.poi_a, { id: a.poi_a, position: a.sourcePosition })
           if (a.poi_b && a.targetPosition) byId.set(a.poi_b, { id: a.poi_b, position: a.targetPosition })
         })
@@ -90,11 +86,11 @@ function buildLandingLayers(arcs, zoom = 10) {
   const poiRadius = poiRadiusMeters(zoom)
   const noDepthTest = { depthTest: false, depthMask: false }
 
-  if (shortArcs.length > 0) {
+  if (list.length > 0) {
     layers.push(
       new ArcLayer({
         id: 'landing-arcs',
-        data: shortArcs,
+        data: list,
         getSourcePosition: (d) => d.sourcePosition,
         getTargetPosition: (d) => d.targetPosition,
         getSourceColor: (d) => quantileToColor(getQuantile(d.dep, quantileBoundaries)),

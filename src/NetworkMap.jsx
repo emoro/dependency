@@ -230,7 +230,10 @@ function buildTooltipContent(object, quantileBoundaries) {
       style: TOOLTIP_STYLE,
     }
   }
-  const q = getQuantile(object.dep, quantileBoundaries)
+  const depVal =
+    object.dep != null && !Number.isNaN(Number(object.dep))
+      ? Number(object.dep).toFixed(3)
+      : '—'
   const dist = object.distance != null && !Number.isNaN(object.distance) ? Number(object.distance).toFixed(2) : '—'
   const origin = escapeHtml(String(object.cat_a ?? '—'))
   const dest = escapeHtml(String(object.cat_b ?? '—'))
@@ -238,7 +241,7 @@ function buildTooltipContent(object, quantileBoundaries) {
     html: `
       <div style="font-weight: 600; color: #f0f0f0; margin-bottom: 8px; font-size: 13px;">${origin} → ${dest}</div>
       <div style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #b8b8b8;">
-        <span><span style="color: #888;">Strength:</span> Q${q}</span>
+        <span><span style="color: #888;">Strength:</span> ${depVal}</span>
         <span><span style="color: #888;">Distance:</span> ${dist} km</span>
       </div>
     `,
@@ -301,7 +304,7 @@ function FilterSidebar({ quantileExtent, quantileRange, onQuantileRangeChange, d
       style={{ ...SIDEBAR_CONTAINER_STYLE, width: 260 }}
     >
       <h3 style={{ margin: '0 0 14px', fontSize: 14, fontWeight: 600, color: '#f0f0f0' }}>
-        Filters
+        Dependency Filters
       </h3>
 
       <section style={SIDEBAR_SECTION_STYLE}>
@@ -455,6 +458,12 @@ export default function NetworkMap({ sharedZoom = 9, onSharedZoomChange }) {
   const [arcs, setArcs] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isSmallScreen, setIsSmallScreen] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= 480 : false
+  )
+  const [isSidebarOpen, setIsSidebarOpen] = useState(
+    typeof window !== 'undefined' ? window.innerWidth > 480 : true
+  )
   const depQuantileBoundaries = useMemo(() => getQuantileBoundaries(arcs), [arcs])
   const quantileExtent = [1, NUM_QUANTILES]
 
@@ -544,6 +553,18 @@ export default function NetworkMap({ sharedZoom = 9, onSharedZoomChange }) {
   arcsRef.current.selectedPoiId = selectedPoiId
   arcsRef.current.zoom = zoom
   arcsRef.current.quantileBoundaries = depQuantileBoundaries
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === 'undefined') return
+      const small = window.innerWidth <= 480
+      setIsSmallScreen(small)
+      if (!small) setIsSidebarOpen(true)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     fetch(DATA_URL)
@@ -730,19 +751,44 @@ export default function NetworkMap({ sharedZoom = 9, onSharedZoomChange }) {
               <span>High</span>
             </div>
           </div>
-          <FilterSidebar
-            quantileExtent={quantileExtent}
-            quantileRange={quantileRange}
-            onQuantileRangeChange={setQuantileRange}
-            distanceExtent={distanceExtent}
-            distanceRange={distanceRange}
-            onDistanceRangeChange={setDistanceRange}
-            taxonomyOptions={taxonomyOptions}
-            originTaxonomies={originTaxonomies}
-            onOriginTaxonomyChange={setOriginTaxonomies}
-            destinationTaxonomies={destinationTaxonomies}
-            onDestinationTaxonomyChange={setDestinationTaxonomies}
-          />
+          {isSmallScreen && (
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen((open) => !open)}
+              style={{
+                position: 'absolute',
+                top: 72,
+                right: 16,
+                zIndex: 11,
+                padding: '6px 10px',
+                fontSize: 12,
+                fontWeight: 500,
+                color: '#fff',
+                background: 'rgba(31, 34, 50, 0.95)',
+                borderRadius: 999,
+                border: '1px solid rgba(255,255,255,0.4)',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              {isSidebarOpen ? 'Hide filters' : 'Show filters'}
+            </button>
+          )}
+          {(!isSmallScreen || isSidebarOpen) && (
+            <FilterSidebar
+              quantileExtent={quantileExtent}
+              quantileRange={quantileRange}
+              onQuantileRangeChange={setQuantileRange}
+              distanceExtent={distanceExtent}
+              distanceRange={distanceRange}
+              onDistanceRangeChange={setDistanceRange}
+              taxonomyOptions={taxonomyOptions}
+              originTaxonomies={originTaxonomies}
+              onOriginTaxonomyChange={setOriginTaxonomies}
+              destinationTaxonomies={destinationTaxonomies}
+              onDestinationTaxonomyChange={setDestinationTaxonomies}
+            />
+          )}
         </>
       )}
     </div>

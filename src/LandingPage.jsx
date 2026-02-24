@@ -88,7 +88,7 @@ const logoRowStyle = {
 }
 
 const logoImgStyle = {
-  height: 36,
+  height: 24,
   width: 'auto',
   display: 'block',
   objectFit: 'contain',
@@ -123,16 +123,19 @@ export default function LandingPage({ onStart }) {
       <div style={shadowOverlayStyle} aria-hidden />
       <div style={contentStyle}>
         <div style={contentInnerStyle}>
-          <h1 style={titleStyle}>Invisible Urban Dependencies</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <img src={`${import.meta.env.BASE_URL}app-icon.png`} alt="" style={{ height: 56, width: 'auto', flexShrink: 0 }} aria-hidden />
+            <h1 style={titleStyle}>Invisible Urban Dependencies</h1>
+          </div>
           <p style={headingStyle}>How human behavior shapes economic resilience in cities</p>
           <p style={paragraphStyle}>
-            Places within cities are deeply interconnected, relying on each other through the flow of people and shared patronage, creating complex dependency networks between them. Leveraging large-scale mobility data, our research shows how businesses, amenities, and other urban points of interest (POIs) depend on each other, revealing connections that aren't always visible but have substantial economic impacts.
+            Places within cities are deeply interconnected, relying on each other through the flow of people and shared patronage, creating complex dependency networks between them. Using large-scale mobility data, we uncover how business and amenities depend on one another, revealing connections that aren't always visible but have substantial economic impacts.
           </p>
           <p style={paragraphStyle}>
-            By analyzing these behavior-based dependency networks, we demonstrate how changes in foot traffic to one location—whether from temporary closures or shifts in consumer behavior—can affect the resilience of surrounding and far-away businesses. The dashboard offers interactive insights into these patterns, enabling users to see the reach of these dependencies, anticipate cascading effects, and explore strategies for fostering resilient, robust, adaptable urban systems.
+            By mapping these behavior-based dependency networks, we demonstrate how shocks in one location-from closures to shifts in demand-can ripple across neighborhoods and even distant parts of the city. This interactive map makes those invisible ties visible, helping users explore those dependencies and cascading effects to design more resilient, adaptive urban systems.
           </p>
           <button type="button" style={buttonStyle} onClick={onStart}>
-            Start →
+            Start exploring →
           </button>
           <div style={attributionStyle}>
             <div>A story map by SUNLab at Northeastern University</div>

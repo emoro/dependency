@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import { NAV_BG, NAV_ACTIVE } from './theme'
 
 const STORIES = [
-  { id: 'network', label: 'Dependency network' },
-  { id: 'simulation', label: 'Simulations' },
+  { id: 'network', label: 'Dependency map' },
+  { id: 'simulation', label: 'Shock cascades' },
 ]
 
-const NAV_ITEMS = [
+const INFO_TABS = [
   { id: 'methods', label: 'Methods' },
   { id: 'research', label: 'Research' },
   { id: 'about', label: 'About' },
@@ -20,17 +20,17 @@ const MODAL_CONTENT = {
   methods: { title: 'Methods', body: null },
   research: { title: 'Research', body: null },
   simulations: {
-    title: 'Simulations',
+    title: 'Shock cascades',
     body: 'Simulation studies allow us to explore cascading effects of disruptions across the dependency network. By modeling scenarios such as the closure of key nodes or changes in travel behavior, we can anticipate impacts on other locations and test strategies for fostering more resilient urban systems. Results from these simulations inform the dependency metrics shown on the map.',
   },
-  about: { title: 'About this story map', body: null },
+  about: { title: 'About this interactive map', body: null },
 }
 
-function MethodsModalContent() {
+function MethodsModalContent({ baseFontSize = 15, headingFontSize = 22 }) {
   const titleBlue = '#1565c0'
   return (
-    <div style={{ fontSize: 15, lineHeight: 1.6, color: '#333' }}>
-      <h2 style={{ margin: '0 0 0.75em', fontSize: 22, fontWeight: 700, color: titleBlue }}>
+    <div style={{ fontSize: baseFontSize, lineHeight: 1.6, color: '#333' }}>
+      <h2 style={{ margin: '0 0 0.75em', fontSize: headingFontSize, fontWeight: 700, color: titleBlue }}>
         Mapping Place-to-Place Dependencies
       </h2>
       <p style={{ margin: '0 0 1em' }}>
@@ -50,12 +50,12 @@ function MethodsModalContent() {
   )
 }
 
-function SimulationMethodsModalContent() {
+function SimulationMethodsModalContent({ baseFontSize = 15, headingFontSize = 22 }) {
   const titleBlue = '#1565c0'
   return (
-    <div style={{ fontSize: 15, lineHeight: 1.6, color: '#333' }}>
-      <h2 style={{ margin: '0 0 0.75em', fontSize: 22, fontWeight: 700, color: titleBlue }}>
-        Simulation Methods
+    <div style={{ fontSize: baseFontSize, lineHeight: 1.6, color: '#333' }}>
+      <h2 style={{ margin: '0 0 0.75em', fontSize: headingFontSize, fontWeight: 700, color: titleBlue }}>
+        How economic shocks propagate
       </h2>
       <p style={{ margin: '0 0 1em' }}>
         Using the dependency network, we can examine how shocks propagate across urban areas. When a disruption — such as a natural disaster, a public health crisis, or a shift in consumer behavior — affects one point of interest (POI), the impact on visitation often spreads far beyond that location. By simulating these cascades, we can trace how reduced foot traffic at one node ripples through the network, revealing indirect and sometimes unexpected dependencies.
@@ -79,33 +79,33 @@ function SimulationMethodsModalContent() {
   )
 }
 
-function ResearchModalContent() {
+function ResearchModalContent({ baseFontSize = 15 }) {
   const linkStyle = { color: '#1976d2', textDecoration: 'none' }
   return (
-    <div style={{ fontSize: 15, lineHeight: 1.6, color: '#333' }}>
+    <div style={{ fontSize: baseFontSize, lineHeight: 1.6, color: '#333' }}>
       <p style={{ margin: '0 0 1em' }}>
-        This story map is based on our research on behavioral-dependency networks in urban areas in the US recently published in Nature Human Behavior:
+        This interactive map is based on our research on behavioral-dependency networks in urban areas in the US recently published in Nature Human Behavior:
       </p>
       <p style={{ margin: 0, paddingLeft: 16, borderLeft: '3px solid #ddd', fontStyle: 'italic' }}>
-        <em>Behavior-based dependency networks between places shape urban economic resilience.</em> Yabe, T., Garcia-Bulle, B., Frank, M., Pentland, A., & Moro, E. Nature Human Behavior (2024).{' '}
+        <em>Behavior-based dependency networks between places shape urban economic resilience.</em> Yabe, T., Garcia-Bulle, B., Frank, M., Pentland, A., & Moro, E. Nature Human Behavior 9,  496–506 (2025).{' '}
         <a href="https://doi.org/10.1038/s41562-024-02072-7" target="_blank" rel="noopener noreferrer" style={linkStyle}>
           [link]
         </a>
-      </p>
+      </p> 
     </div>
   )
 }
 
-function AboutModalContent() {
+function AboutModalContent({ baseFontSize = 15 }) {
   const linkStyle = { color: '#1976d2', textDecoration: 'none' }
   const emailIconStyle = { fontSize: 20, verticalAlign: 'middle', marginLeft: 2 }
   const teamImgStyle = { maxHeight: 88, width: 'auto', display: 'block', margin: '0 auto 4px' }
   const cellStyle = { padding: '4px 6px', verticalAlign: 'top', textAlign: 'center' }
   const nameStyle = { margin: 0, fontSize: 12, lineHeight: 1.35 }
   return (
-    <div style={{ fontSize: 15, lineHeight: 1.6, color: '#333' }}>
+    <div style={{ fontSize: baseFontSize, lineHeight: 1.6, color: '#333' }}>
       <p style={{ margin: '0 0 1em' }}>
-        This story map and the research supporting it is a project from the{' '}
+        This interactive map and the research supporting it is a project from the{' '}
         <a href="https://socialurban.net" target="_blank" rel="noopener noreferrer" style={linkStyle}>
           Social Urban Network (SUNLab)
         </a>{' '}
@@ -154,14 +154,33 @@ function AboutModalContent() {
 
 export default function AppNav({ story, setStory, onGoHome, initialModalId, onInitialModalShown }) {
   const [openModalId, setOpenModalId] = useState(null)
+  const [infoTabId, setInfoTabId] = useState('methods')
+  const [isSmallScreen, setIsSmallScreen] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= 480 : false
+  )
 
   // Auto-open a modal (Methods) the first time the dependency network is shown
   useEffect(() => {
     if (initialModalId && !openModalId) {
-      setOpenModalId(initialModalId)
+      if (initialModalId === 'methods' || initialModalId === 'research' || initialModalId === 'about') {
+        setInfoTabId(initialModalId)
+        setOpenModalId('info')
+      } else {
+        setOpenModalId(initialModalId)
+      }
       if (onInitialModalShown) onInitialModalShown()
     }
   }, [initialModalId, openModalId, onInitialModalShown])
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        setIsSmallScreen(window.innerWidth <= 480)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const content = openModalId ? MODAL_CONTENT[openModalId] : null
 
@@ -175,11 +194,15 @@ export default function AppNav({ story, setStory, onGoHome, initialModalId, onIn
           right: 0,
           zIndex: 10,
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          flexDirection: isSmallScreen ? 'column' : 'row',
+          alignItems: isSmallScreen ? 'stretch' : 'center',
+          justifyContent: isSmallScreen ? 'flex-start' : 'space-between',
+          rowGap: isSmallScreen ? 8 : 0,
           minHeight: 56,
-          paddingLeft: 20,
-          paddingRight: 20,
+          paddingLeft: isSmallScreen ? 12 : 20,
+          paddingRight: isSmallScreen ? 12 : 20,
+          paddingTop: isSmallScreen ? 6 : 0,
+          paddingBottom: isSmallScreen ? 6 : 0,
           background: NAV_BG,
           boxShadow: '0 1px 0 rgba(255,255,255,0.06)',
         }}
@@ -191,6 +214,9 @@ export default function AppNav({ story, setStory, onGoHome, initialModalId, onIn
             type="button"
             onClick={onGoHome}
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
               background: 'none',
               border: 'none',
               padding: 0,
@@ -206,52 +232,63 @@ export default function AppNav({ story, setStory, onGoHome, initialModalId, onIn
             }}
             aria-label="Go back to home"
           >
-            Invisible Urban Dependencies
+            <img src={`${import.meta.env.BASE_URL}app-icon.png`} alt="" style={{ height: 28, width: 'auto', flexShrink: 0 }} aria-hidden />
+            <span>Invisible Urban Dependencies</span>
           </button>
+        </div>
+        {isSmallScreen ? (
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 4,
+              justifyContent: 'space-between',
+              gap: 8,
+              marginTop: 4,
             }}
           >
-            {STORIES.map(({ id, label }) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setStory(id)}
-                style={{
-                  padding: '6px 12px',
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: story === id ? NAV_ACTIVE : 'rgba(255,255,255,0.85)',
-                  background: story === id ? 'rgba(255,255,255,0.1)' : 'transparent',
-                  border:
-                    '1px solid ' +
-                    (story === id ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)'),
-                  borderRadius: 6,
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {NAV_ITEMS.map(({ id, label, active }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setOpenModalId(id)}
+            <div
               style={{
-                padding: '8px 14px',
-                fontSize: 14,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+              }}
+            >
+              {STORIES.map(({ id, label }) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setStory(id)}
+                  style={{
+                    padding: '6px 10px',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: story === id ? NAV_ACTIVE : 'rgba(255,255,255,0.85)',
+                    background: story === id ? 'rgba(255,255,255,0.1)' : 'transparent',
+                    border:
+                      '1px solid ' +
+                      (story === id ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)'),
+                    borderRadius: 6,
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setInfoTabId('methods')
+                setOpenModalId('info')
+              }}
+              style={{
+                padding: '6px 10px',
+                fontSize: 13,
                 fontWeight: 500,
-                color: active ? NAV_ACTIVE : '#fff',
+                color: '#fff',
                 textDecoration: 'none',
-                borderBottom: active ? `2px solid ${NAV_ACTIVE}` : '2px solid transparent',
+                borderBottom: '2px solid transparent',
                 background: 'none',
                 borderTop: 'none',
                 borderLeft: 'none',
@@ -260,12 +297,78 @@ export default function AppNav({ story, setStory, onGoHome, initialModalId, onIn
                 fontFamily: 'inherit',
               }}
             >
-              {label}
+              Info
             </button>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                }}
+              >
+                {STORIES.map(({ id, label }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setStory(id)}
+                    style={{
+                      padding: '6px 12px',
+                      fontSize: 13,
+                      fontWeight: 500,
+                      color: story === id ? NAV_ACTIVE : 'rgba(255,255,255,0.85)',
+                      background: story === id ? 'rgba(255,255,255,0.1)' : 'transparent',
+                      border:
+                        '1px solid ' +
+                        (story === id ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)'),
+                      borderRadius: 6,
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setInfoTabId('methods')
+                  setOpenModalId('info')
+                }}
+                style={{
+                  padding: '8px 14px',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: '#fff',
+                  textDecoration: 'none',
+                  borderBottom: '2px solid transparent',
+                  background: 'none',
+                  borderTop: 'none',
+                  borderLeft: 'none',
+                  borderRight: 'none',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                Info
+              </button>
+            </div>
+          </>
+        )}
       </nav>
-      {content && (
+      {openModalId && (
         <div
           role="dialog"
           aria-modal="true"
@@ -292,7 +395,10 @@ export default function AppNav({ story, setStory, onGoHome, initialModalId, onIn
           <div
             style={{
               position: 'relative',
-              maxWidth: openModalId === 'about' || openModalId === 'methods' ? 720 : 480,
+              maxWidth:
+                openModalId === 'info' || openModalId === 'about' || openModalId === 'methods'
+                  ? 720
+                  : 480,
               maxHeight: '80vh',
               overflow: 'auto',
               background: '#fff',
@@ -303,45 +409,137 @@ export default function AppNav({ story, setStory, onGoHome, initialModalId, onIn
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
-              <h2 id="modal-title" style={{ margin: 0, fontSize: 20, fontWeight: 700, color: NAV_BG }}>
-                {content.title}
-              </h2>
-              <button
-                type="button"
-                onClick={() => setOpenModalId(null)}
-                aria-label="Close"
-                style={{
-                  padding: 4,
-                  border: 'none',
-                  background: 'none',
-                  cursor: 'pointer',
-                  fontSize: 24,
-                  lineHeight: 1,
-                  color: '#666',
-                }}
-              >
-                ×
-              </button>
+              {openModalId !== 'info' && (
+                <>
+                  <h2
+                    id="modal-title"
+                    style={{ margin: 0, fontSize: 20, fontWeight: 700, color: NAV_BG }}
+                  >
+                    {content?.title}
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => setOpenModalId(null)}
+                    aria-label="Close"
+                    style={{
+                      padding: 4,
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      fontSize: 24,
+                      lineHeight: 1,
+                      color: '#666',
+                    }}
+                  >
+                    ×
+                  </button>
+                </>
+              )}
             </div>
-            {openModalId === 'about' ? (
+            {openModalId === 'info' ? (
               <div style={{ marginTop: 16 }}>
-                <AboutModalContent />
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 12,
+                    marginBottom: 20,
+                    borderBottom: '1px solid #eee',
+                    paddingBottom: 6,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                    }}
+                  >
+                    {INFO_TABS.map(({ id, label }) => (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setInfoTabId(id)}
+                        style={{
+                          padding: isSmallScreen ? '6px 10px' : '8px 14px',
+                          fontSize: isSmallScreen ? 13 : 15,
+                          fontWeight: 500,
+                          color: infoTabId === id ? NAV_ACTIVE : '#555',
+                          borderBottom:
+                            infoTabId === id ? `2px solid ${NAV_ACTIVE}` : '2px solid transparent',
+                          background: 'none',
+                          borderTop: 'none',
+                          borderLeft: 'none',
+                          borderRight: 'none',
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                        }}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setOpenModalId(null)}
+                    aria-label="Close"
+                    style={{
+                      padding: 4,
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      fontSize: 24,
+                      lineHeight: 1,
+                      color: '#666',
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+                {infoTabId === 'about' ? (
+                  <AboutModalContent baseFontSize={isSmallScreen ? 13 : 15} />
+                ) : infoTabId === 'methods' ? (
+                  story === 'network' ? (
+                    <MethodsModalContent
+                      baseFontSize={isSmallScreen ? 13 : 15}
+                      headingFontSize={isSmallScreen ? 18 : 22}
+                    />
+                  ) : (
+                    <SimulationMethodsModalContent
+                      baseFontSize={isSmallScreen ? 13 : 15}
+                      headingFontSize={isSmallScreen ? 18 : 22}
+                    />
+                  )
+                ) : infoTabId === 'research' ? (
+                  <ResearchModalContent baseFontSize={isSmallScreen ? 13 : 15} />
+                ) : null}
+              </div>
+            ) : openModalId === 'about' ? (
+              <div style={{ marginTop: 16 }}>
+                <AboutModalContent baseFontSize={isSmallScreen ? 13 : 15} />
               </div>
             ) : openModalId === 'methods' ? (
               <div style={{ marginTop: 16 }}>
                 {story === 'network' ? (
-                  <MethodsModalContent />
+                  <MethodsModalContent
+                    baseFontSize={isSmallScreen ? 13 : 15}
+                    headingFontSize={isSmallScreen ? 18 : 22}
+                  />
                 ) : (
-                  <SimulationMethodsModalContent />
+                  <SimulationMethodsModalContent
+                    baseFontSize={isSmallScreen ? 13 : 15}
+                    headingFontSize={isSmallScreen ? 18 : 22}
+                  />
                 )}
               </div>
             ) : openModalId === 'research' ? (
               <div style={{ marginTop: 16 }}>
-                <ResearchModalContent />
+                <ResearchModalContent baseFontSize={isSmallScreen ? 13 : 15} />
               </div>
             ) : (
               <p style={{ margin: '16px 0 0', fontSize: 15, lineHeight: 1.6, color: '#333' }}>
-                {content.body}
+                {content?.body}
               </p>
             )}
           </div>
